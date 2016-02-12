@@ -35,13 +35,12 @@ class Slacker extends BaseEvents {
 
     return new Promise((resolve, reject) => {
       let req = https.request({
-        //protocol: SLACK_API_PROTOCOL,
         host: SLACK_API_HOST,
         method: SLACK_API_METHOD,
         path: `/${SLACK_API_BASE}/${method}`,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': postData.length
+          'content-type': 'application/x-www-form-urlencoded',
+          'content-length': postData.length
         }
       });
 
@@ -66,20 +65,19 @@ class Slacker extends BaseEvents {
       });
 
       req.on('error', error => reject(error));
-      req.write(postData);
+      req.end(postData);
     });
   }
 
-  message(message) {
+  message(attachments = {}) {
     return this.api('chat.postMessage', {
-      text: message,
+      attachments: JSON.stringify([attachments]),
       channel: this[_channel],
       pretty: 1,
       as_user: true
     }).then((stuff) => {
 
       this.emit('message.done', {
-        message,
         stuff
       });
 
